@@ -1,5 +1,4 @@
 //! Servidor REST
-// console.log('Hola Mundo');
 
 //* Importaciones en NODE con el require():
 require('dotenv').config();
@@ -15,6 +14,9 @@ const app = express();
 //*  => 'use' es un middleware que no es más que una función que se ejecutará para el resto de lineas de abajo:
 app.use( cors() ); 
 
+//* Lectura y parseo del body:
+app.use( express.json()); 
+
 //* Conexión a la base de datos:
 dbConnection(); 
 // console.log( process.env.PORT );
@@ -24,17 +26,25 @@ dbConnection();
     //?  franmomo72
 
 //* Rutas:
-app.get('/', (req, res) => {
+app.use( '/api/usuarios', require('./routes/usuarios'));
+app.use( '/api/login', require('./routes/auth'));
+
+/*
+app.get('/api/usuarios', (req, res) => {
 
     //* Las API RES siempre se responderán en formato JSON y normalmente se retornan objetos:
     // res.status().json({
     res.json({
         ok:  true,
-        msg: 'Hola Mundo'
+        // msg: 'Hola Mundo'
+        usuarios: [{
+            id: 123,
+            nombre: 'Francisco',
+        }]
     });
 
 });
-
+*/
 
 //* Para levantar el servidor de Express, escuchamos el puerto y el callback se ejecutará cuando 
 //* el puerto esté levantado:
