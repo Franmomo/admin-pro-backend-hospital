@@ -1,4 +1,4 @@
-//! Servidor REST
+//! Index.js => Servidor REST
 
 //* Importaciones en NODE con el require():
 require('dotenv').config();
@@ -23,11 +23,17 @@ dbConnection();
 
 //* Usuario/Password de MongoDB:
     //?   blbVT1v9fBL47XqE
+    //?   OPuL7rEVimi79XFm
     //?  franmomo72
 
 //* Rutas:
 app.use( '/api/usuarios', require('./routes/usuarios'));
+app.use( '/api/hospitales', require('./routes/hospitales'));
+app.use( '/api/medicos', require('./routes/medicos'));
 app.use( '/api/login', require('./routes/auth'));
+app.use( '/api/todo', require('./routes/busqueda'));
+app.use( '/api/uploads', require('./routes/uploads'));
+
 
 /*
 app.get('/api/usuarios', (req, res) => {

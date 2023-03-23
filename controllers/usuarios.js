@@ -1,4 +1,4 @@
-//! Controllers:
+//! Controllers/usuarios.js:
 const { response, request } = require('express');
 const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
@@ -8,18 +8,39 @@ const { generarJWT } = require('../helpers/jwt');
 //* GET:
 const getUsuarios = async (req, res) => {
 
-    //* Recuperamos los usuarios que existan en la base de datos: 
-    // const usuarios = await Usuario.find();
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    //* Recibimos parámetros opcionales, dependiendo de lo que se haya informado en la pestaña de 
+    //* 'Params' y en 'Query Params':
+    const desde = Number(req.query.desde) || 0; //* si no hay parámetro por defecto asingar un 0 
+    const limite = Number(req.query.limite) || 0
+
+    //* Recuperamos los usuarios que existan en la base de datos
+    //! Aplicamos PAGINACION: 
+    // const usuarios = await Usuario
+    //                         .find({}, 'nombre email role google')
+    //                         .skip( desde )
+    //                         .limit( limite );
+    // const total = await Usuario.count();
+
+    //* Podemos mejorar los 2 await anteriores para evitar realizar 2 tareas asincronas secuenciales.
+    //* De esta forma ambas promesas se ejecutan de forma simultánea y los resultados en cada posición: 
+    const [ usuarios, total ] = await Promise.all([
+        Usuario
+            .find({}, 'nombre email role google img')
+            .skip( desde )
+            .limit( limite ),
+
+        // Usuario.count()
+        Usuario.countDocuments(),
+    ]);
 
     //* Las API RES siempre se responderán en formato JSON y normalmente se retornan objetos:
     res.json({
         ok:  true,
-        // usuarios: 'get Usuarios'
         usuarios, 
-        uid: req.uid //* lo hemos obtenido en nuestro middleware/validar-jwt
+        uid: req.uid, //* lo hemos obtenido en nuestro middleware/validar-jwt
+        total,
     });
-}
+};
 
 //* POST: 
 const crearUsuarios = async (req, res = response ) => {
@@ -74,9 +95,9 @@ const crearUsuarios = async (req, res = response ) => {
             ok: false,
             msg: 'Error inesperado, revisar logs',
         });
-    } 
+    };
 
-}
+};
 
 //* PUT:
 const actualizarUsuarios = async (req = request, res = response ) => {
@@ -131,9 +152,9 @@ const actualizarUsuarios = async (req = request, res = response ) => {
             ok: false,
             msg: 'Error inesperado en actualización datos usuario'
         });
-    }
+    };
 
-}
+};
 
 
 //* DELETE:
@@ -167,13 +188,13 @@ const borrarUsuarios = async (req = request, res = response ) => {
             ok: false,
             msg: 'Error inesperado en borrado datos usuario'
         });
-    }
+    };
 
-}
+};
 
 module.exports = {
     getUsuarios,
     crearUsuarios,
     actualizarUsuarios,
     borrarUsuarios,
-}
+};
