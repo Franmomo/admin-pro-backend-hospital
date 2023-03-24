@@ -33,7 +33,12 @@ router.post(
 //* Realizamos un PUT para modificar la info de un medicos, por lo tanto tendremos que acceder al '/:id':
 router.put(
     '/:id', 
-    [],  
+    [
+        validarJWT,
+        check('nombre', 'El nombre del médico es obligatorio').not().isEmpty(),  
+        check('hospital', 'El hospitalID debe ser válido').isMongoId(),  
+        validarCampos,
+    ],  
     actualizarMedico
 );
 
@@ -41,9 +46,9 @@ router.put(
 //* Realizamos un DELETE para Borrar la info de un medicos, por lo tanto tendremos que acceder al '/:id':
 router.delete(
     '/:id', 
-    [],
+    validarJWT,
     borrarMedico
-    );
+);
 
 
 module.exports = router;

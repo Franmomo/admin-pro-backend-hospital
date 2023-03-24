@@ -52,18 +52,80 @@ const crearHospital = async( req = request, res = response ) => {
 
 const actualizarHospital = async( req = request, res = response ) => {
 
-    return res.json({
-        ok: true,
-        msg: 'actualizarHospital'
-    });
+    const id  = req.params.id
+    const uid = req.uid;
+
+    try {
+
+        const hospitalDB = await Hospital.findById( id );
+        if ( !hospitalDB ) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Error hospital no encontrado para ese id',
+            });
+        };
+        
+        // const nombre = req.body.nombre;
+        const cambiosHospital = {
+            ...req.body,
+            usuario: uid
+        };
+
+        //*  indicamos que después de la actualización se muestre el usuario 'new' actualizado:
+        // const hospitalActualizado = await Hospital.findByIdAndUpdate( id, nombre, { new: true } );
+        const hospitalActualizado = await Hospital.findByIdAndUpdate( id, cambiosHospital, { new: true } );
+
+        res.json({
+            ok: true,
+            hospital: hospitalActualizado,
+        });
+
+        return res.json({
+            ok: true,
+            msg: 'actualizarHospital'
+        });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: ' Contactar con el administrador'
+        });
+    }
+    
 };
 
 const borrarHospital = async( req = request, res = response ) => {
 
-    return res.json({
-        ok: true,
-        msg: 'borrarHospital'
-    });
+    const id = req.params.id
+
+    try {
+        
+        const hospitalDeleteDB = await Hospital.findById( id );
+        if ( !hospitalDeleteDB ) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Error hospital no encontrado para ese id',
+            });
+        };
+        
+        //* Borrar este hospital en la bdd:
+        await Hospital.findByIdAndDelete( id );
+
+        res.json({
+            ok: true,
+            // id,
+            hospital: 'Hospital ha sido borrado correctamente',
+
+        });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado en borrado datos hospital'
+        });
+    };
 };
 
 module.exports = {

@@ -31,7 +31,11 @@ router.post(
 //* PUT => Realizamos un PUT para modificar la info de un hospital, por lo tanto tendremos que acceder al '/:id':
 router.put(
     '/:id', 
-    [],  
+    [
+        validarJWT,
+        check('nombre', 'El nombre del hospital es obligatorio').not().isEmpty(),  
+        validarCampos,
+    ],  
     actualizarHospital
 );
 
@@ -39,7 +43,7 @@ router.put(
 //* DELETE => Realizamos un DELETE para Borrar la info de un hospital, por lo tanto tendremos que acceder al '/:id':
 router.delete(
     '/:id', 
-    [],
+    validarJWT,
     borrarHospital
     );
 

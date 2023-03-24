@@ -102,8 +102,6 @@ const crearUsuarios = async (req, res = response ) => {
 //* PUT:
 const actualizarUsuarios = async (req = request, res = response ) => {
     
-    // TODO: validar token y comprobar si el usuario es correcto
-
     const uid = req.params.id
     // console.log(req.params);
 

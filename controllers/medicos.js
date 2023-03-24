@@ -26,14 +26,12 @@ const crearMedico = async( req = request, res = response ) => {
     //* req.uid lo tenemos del payload del TOKEN que hemos generado !!!
     const uid = req.uid; 
     
-    //* Creamos la nueva instacia de nuestro hospital, hacemos SPREAD del body para extraer el campo
+    //* Creamos la nueva instacia de nuestro médico, hacemos SPREAD del body para extraer el campo
     //* 'usuario' del modelo y asignarle el 'uid' recuperado del TOKEN: 
-    // const hospital = new Hospital( req.body );
     const medico = new Medico({
         usuario: uid,
         ...req.body
     });
-    console.log(medico);
 
     try {
 
@@ -58,21 +56,76 @@ const crearMedico = async( req = request, res = response ) => {
 //* PUT: 
 const actualizarMedico = async( req = request, res = response ) => {
 
-    return res.json({
-        ok: true,
-        msg: 'actualizarMedico'
-    });
+    const id  = req.params.id //? ID del hospital
+    const uid = req.uid;      //? ID del usuario
+
+    try {
+
+        const medicoDB = await Medico.findById( id );
+        if ( !medicoDB ) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Error médico no encontrado para ese id',
+            });
+        };
+        
+        const cambiosMedico = {
+            ...req.body,
+            usuario: uid
+        };
+
+        //*  indicamos que después de la actualización se muestre el médico 'new' actualizado:
+        const medicoActualizado = await Medico.findByIdAndUpdate( id, cambiosMedico, { new: true } );
+
+        res.json({
+            ok: true,
+            hospital: medicoActualizado,
+        });
+       
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: ' Contactar con el administrador'
+        });
+    };
 };
 
 
 //* DELETE: 
 const borrarMedico = async( req = request, res = response ) => {
 
-    return res.json({
-        ok: true,
-        msg: 'borrarMedico'
-    });
+    const id = req.params.id
+
+    try {
+        
+        const medicoDeleteDB = await Medico.findById( id );
+        if ( !medicoDeleteDB ) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Error médico no encontrado para ese id',
+            });
+        };
+        
+        //* Borrar este médico en la bdd:
+        await Medico.findByIdAndDelete( id );
+
+        res.json({
+            ok: true,
+            // id,
+            médico: 'Médico ha sido borrado correctamente',
+
+        });
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            ok: false,
+            msg: 'Error inesperado en borrado datos médico'
+        });
+    };
 };
+
 
 module.exports = {
     getMedicos,
