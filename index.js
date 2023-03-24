@@ -14,6 +14,11 @@ const app = express();
 //*  => 'use' es un middleware que no es más que una función que se ejecutará para el resto de lineas de abajo:
 app.use( cors() ); 
 
+
+//* Carpeta pública:
+app.use( express.static('public') );
+
+
 //* Lectura y parseo del body:
 app.use( express.json()); 
 
